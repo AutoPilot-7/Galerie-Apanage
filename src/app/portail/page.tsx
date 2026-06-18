@@ -1,0 +1,56 @@
+// ============================================================================
+// Galerie Apanage — Portail client : « Mes dossiers ».
+// En mode réel, la RLS scope automatiquement les dossiers au client connecté.
+// En mode mock (sans auth), un sélecteur de client permet de démontrer la vue.
+// ============================================================================
+
+import Link from 'next/link';
+import { getData } from '@/data';
+import { env } from '@/lib/env';
+import { FriseStatut, StatutBadge } from '@/components/ui';
+
+export const dynamic = 'force-dynamic';
+
+export default async function PortailPage({ searchParams }: { searchParams: Promise<{ client?: string }> }) {
+  const sp = await searchParams;
+  const [dossiers, clients] = await Promise.all([getData().listDossiers(), getData().listClients()]);
+
+  // Mock : on filtre par client choisi (défaut : premier). Réel : déjà filtré par RLS.
+  const mock = !env.supabase.configured;
+  const clientId = sp.client ?? (mock ? clients[0]?.id : undefined);
+  const visibles = mock && clientId ? dossiers.filter((d) => d.clientId === clientId) : dossiers;
+
+  return (
+    <div className="stack">
+      <div className="between">
+        <h1 style={{ margin: 0 }}>Mes dossiers</h1>
+        {mock && (
+          <form className="row small" style={{ alignItems: 'center', gap: 6 }}>
+            <span className="muted">Démo — vue client :</span>
+            <select name="client" className="select" defaultValue={clientId} style={{ width: 220 }}>
+              {clients.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+            </select>
+            <button className="btn" type="submit">Voir</button>
+          </form>
+        )}
+      </div>
+
+      {visibles.length === 0 ? (
+        <p className="muted">Aucun dossier pour le moment. Votre commissaire ouvrira votre dossier après votre prise de contact.</p>
+      ) : (
+        <div className="stack">
+          {visibles.map((d) => (
+            <Link key={d.id} href={`/portail/dossiers/${d.id}`} className="card stack" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="between">
+                <strong>{d.vehiculeMarque} {d.vehiculeModele}</strong>
+                <StatutBadge statut={d.statut} />
+              </div>
+              <FriseStatut statut={d.statut} />
+              <span className="small mono muted">{d.reference}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
