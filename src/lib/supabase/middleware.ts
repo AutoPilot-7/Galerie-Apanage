@@ -17,6 +17,15 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   // Mode mock : pas d'auth, navigation libre (zéro clé requise).
   if (!env.supabase.configured) return response;
 
+  // Magic-link : Supabase renvoie sur la racine (Site URL) avec `?code=…`.
+  // On le réachemine vers /auth/callback qui échange le code contre la session.
+  const code = request.nextUrl.searchParams.get('code');
+  if (code && request.nextUrl.pathname !== '/auth/callback') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/callback';
+    return NextResponse.redirect(url); // conserve ?code (et ?next si présent)
+  }
+
   const supabase = createServerClient<Database>(env.supabase.url!, env.supabase.anonKey!, {
     cookies: {
       getAll() {

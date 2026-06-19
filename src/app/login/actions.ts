@@ -16,8 +16,11 @@ export async function envoyerMagicLinkAction(fd: FormData) {
   if (!email) redirect('/login?error=email');
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
+    // On vise la racine du site (= Site URL, toujours autorisée par Supabase
+    // sans avoir à gérer la liste blanche Redirect URLs). Le middleware
+    // réachemine ensuite le `?code=` vers /auth/callback pour l'échange.
     email,
-    options: { emailRedirectTo: `${env.site.url}/auth/callback` },
+    options: { emailRedirectTo: env.site.url },
   });
   redirect(error ? `/login?error=${encodeURIComponent(error.message)}` : '/login?sent=1');
 }
