@@ -23,9 +23,12 @@ export default async function PipelinePage() {
 
   return (
     <div className="stack">
-      <div className="between">
-        <h1 style={{ margin: 0 }}>Pipeline</h1>
-        <span className="muted small">{dossiers.length} dossiers · le tunnel = le champ statut</span>
+      <div className="cockpit-page-header between" style={{ alignItems: 'flex-end' }}>
+        <div>
+          <h1 className="cockpit-page-title">Pipeline</h1>
+          <p className="cockpit-page-sub">Kanban des dossiers · tunnel de statuts</p>
+        </div>
+        <span className="muted small">{dossiers.length} dossiers</span>
       </div>
 
       {/* Création d'un dossier (objet pivot) */}
@@ -51,14 +54,14 @@ export default async function PipelinePage() {
       </details>
 
       {/* Kanban */}
-      <div className="row" style={{ flexWrap: 'nowrap', overflowX: 'auto', alignItems: 'flex-start', paddingBottom: 8 }}>
+      <div className="kanban-wrap">
         {DOSSIER_STATUTS.map((statut) => {
           const colonne = dossiers.filter((d) => d.statut === statut);
           return (
-            <section key={statut} style={{ minWidth: 268, flex: '0 0 268px' }} className="stack">
-              <div className="between" style={{ position: 'sticky', top: 0 }}>
+            <section key={statut} className="kanban-col">
+              <div className="kanban-header between">
                 <StatutBadge statut={statut} />
-                <span className="muted small">{colonne.length}</span>
+                <span className="kanban-count muted small">{colonne.length}</span>
               </div>
               <p className="muted small" style={{ margin: 0 }}>{STATUT_META[statut].description}</p>
 

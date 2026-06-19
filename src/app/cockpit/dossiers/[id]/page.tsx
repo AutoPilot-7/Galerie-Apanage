@@ -272,8 +272,9 @@ export default async function FicheDossier({ params }: { params: Promise<{ id: s
         <SectionTitle n={7} title="Messagerie" hint="fil de discussion avec le client" />
         <div className="stack" style={{ gap: 6 }}>
           {d.messages.length === 0 ? <EmptyState>Aucun message.</EmptyState> : d.messages.map((m) => (
-            <div key={m.id} className="small" style={{ padding: '6px 10px', borderRadius: 6, background: m.auteur === 'COMMISSAIRE' ? 'var(--surface-2)' : '#eef4f0' }}>
-              <strong>{m.auteur}</strong> · <span className="muted">{dt(m.createdAt)}</span><br />{m.contenu}
+            <div key={m.id} className={`msg-bubble ${m.auteur === 'COMMISSAIRE' ? 'msg-bubble-self' : 'msg-bubble-other'}`}>
+              <span className="msg-meta">{m.auteur} · {dt(m.createdAt)}</span>
+              <span>{m.contenu}</span>
             </div>
           ))}
         </div>

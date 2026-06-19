@@ -4,20 +4,27 @@
 // ============================================================================
 
 import Link from 'next/link';
+import { LogoMark } from '@/components/ui';
 
 export default function MentionsPage() {
   return (
     <>
-      <header className="topbar">
-        <div className="brand">Galerie <span>Apanage</span></div>
+      <header className="vitrine-topbar">
+        <div className="brand">
+          <LogoMark size={18} light />
+          Galerie <span>Apanage</span>
+        </div>
         <nav className="nav">
           <Link href="/">← Vitrine</Link>
-          <Link href="/login" className="btn btn-primary">Accès client / commissaire</Link>
+          <Link href="/login" className="btn btn-primary">Accès client</Link>
         </nav>
       </header>
 
-      <main className="container stack">
-        <h1 style={{ margin: 0 }}>Mentions légales &amp; CGV</h1>
+      <main className="container stack" style={{ paddingTop: 'var(--space-16)', paddingBottom: 'var(--space-24)' }}>
+        <div style={{ marginBottom: 'var(--space-10)' }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-ink-45)', margin: '0 0 var(--space-2)' }}>Légal</p>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 'var(--text-3xl)', color: 'var(--color-encre)', margin: 0 }}>Mentions légales &amp; CGV</h1>
+        </div>
 
         <div className="hitl">
           <strong>⚠ À faire valider par un professionnel</strong> — les points relatifs aux fonds clients
@@ -66,8 +73,15 @@ export default function MentionsPage() {
         </section>
       </main>
 
-      <footer className="container muted small">
-        Galerie Apanage — France &amp; UE
+      <footer className="vitrine-footer">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <LogoMark size={16} />
+          <span>Galerie Apanage — Tokyo · Séoul</span>
+        </div>
+        <div style={{ display: 'flex', gap: '24px' }}>
+          <Link href="/">Vitrine</Link>
+          <Link href="/vitrine/processus">Processus &amp; prix</Link>
+        </div>
       </footer>
     </>
   );

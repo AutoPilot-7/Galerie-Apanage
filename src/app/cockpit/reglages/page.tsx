@@ -14,9 +14,11 @@ export default async function ReglagesPage() {
   const users = await getData().listUsers();
 
   return (
-    <main className="container stack">
-      <h1 style={{ margin: 0 }}>Réglages</h1>
-      <p className="muted">Réglages : accès, sources de scrap (whitelist), modèles/connecteurs IA.</p>
+    <div className="stack">
+      <div className="cockpit-page-header">
+        <h1 className="cockpit-page-title">Réglages</h1>
+        <p className="cockpit-page-sub">Accès · Sources whitelist · Connecteurs IA</p>
+      </div>
 
       {/* Paramètres */}
       <section className="card stack">
@@ -88,6 +90,6 @@ export default async function ReglagesPage() {
           </table>
         )}
       </section>
-    </main>
+    </div>
   );
 }

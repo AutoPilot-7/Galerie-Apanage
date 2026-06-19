@@ -16,26 +16,29 @@ export default async function PilotagePage() {
   const mvts = await getData().listMouvements();
 
   return (
-    <main className="container stack">
-      <h1 style={{ margin: 0 }}>Pilotage — finance &amp; KPI</h1>
+    <div className="stack">
+      <div className="cockpit-page-header">
+        <h1 className="cockpit-page-title">Pilotage</h1>
+        <p className="cockpit-page-sub">Finance · KPI · Mouvements</p>
+      </div>
 
       {/* Bloc KPI */}
       <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
-        <div className="card">
-          <div className="muted small">Total dossiers</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>{k.totalDossiers}</div>
+        <div className="card kpi-card">
+          <p className="kpi-label">Total dossiers</p>
+          <p className="kpi-value">{k.totalDossiers}</p>
         </div>
-        <div className="card">
-          <div className="muted small">Encours estimé</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}><Money value={k.encoursEstime} /></div>
+        <div className="card kpi-card">
+          <p className="kpi-label">Encours estimé</p>
+          <p className="kpi-value"><Money value={k.encoursEstime} /></p>
         </div>
-        <div className="card">
-          <div className="muted small">Marge simulée totale</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}><Money value={k.margeSimuleeTotale} /></div>
+        <div className="card kpi-card">
+          <p className="kpi-label">Marge simulée totale</p>
+          <p className="kpi-value"><Money value={k.margeSimuleeTotale} /></p>
         </div>
-        <div className="card">
-          <div className="muted small">Marge réelle totale</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}><Money value={k.margeReelleTotale} /></div>
+        <div className="card kpi-card">
+          <p className="kpi-label">Marge réelle totale</p>
+          <p className="kpi-value"><Money value={k.margeReelleTotale} /></p>
         </div>
       </div>
 
@@ -141,6 +144,6 @@ export default async function PilotagePage() {
       </section>
 
       <p className="muted small">Écritures séquestre via service_role (cloisonnement RLS).</p>
-    </main>
+    </div>
   );
 }

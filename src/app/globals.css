@@ -1172,6 +1172,137 @@ th {
 .frise-label[data-courant] { color: var(--color-prune); }
 
 /* ==========================================================================
+   COCKPIT — En-têtes de pages
+   ========================================================================== */
+.cockpit-page-header {
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--hair);
+}
+.cockpit-page-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-3xl);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0 0 var(--space-1);
+  color: var(--color-encre);
+}
+.cockpit-page-sub {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-45);
+  margin: 0;
+}
+
+/* ==========================================================================
+   COCKPIT — KPI cards
+   ========================================================================== */
+.kpi-card {
+  border-left: 2px solid var(--color-prune);
+}
+.kpi-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-45);
+  margin: 0;
+}
+.kpi-value {
+  font-family: var(--font-serif);
+  font-size: var(--text-3xl);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--color-encre);
+  margin: var(--space-2) 0 0;
+  line-height: 1;
+}
+
+/* ==========================================================================
+   COCKPIT — Kanban
+   ========================================================================== */
+.kanban-wrap {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  align-items: flex-start;
+  padding-bottom: var(--space-6);
+  margin: 0 calc(-1 * var(--space-10));
+  padding-left: var(--space-10);
+  padding-right: var(--space-10);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-greige) transparent;
+}
+.kanban-col {
+  min-width: 264px;
+  flex: 0 0 264px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.kanban-header {
+  position: sticky;
+  top: 0;
+  background: var(--color-platre);
+  z-index: 5;
+  padding-bottom: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+.kanban-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-45);
+  background: var(--color-platre-2);
+  border: 1px solid var(--hair);
+  border-radius: 99px;
+  padding: 1px 8px;
+}
+.kanban-desc {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-45);
+  margin: 0 0 var(--space-2);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   MESSAGERIE — Bulles de chat
+   ========================================================================== */
+.msg-bubble {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.msg-bubble-self {
+  background: var(--color-platre-2);
+  border: 1px solid var(--hair);
+}
+.msg-bubble-other {
+  background: rgba(84, 43, 61, 0.04);
+  border: 1px solid rgba(84, 43, 61, 0.08);
+}
+.msg-meta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-45);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.msg-body { line-height: 1.55; }
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 

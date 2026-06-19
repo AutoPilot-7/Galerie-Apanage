@@ -14,11 +14,11 @@ export default async function BibliothequePage() {
   const trames = await getData().listTrames();
 
   return (
-    <main className="container stack">
-      <h1 style={{ margin: 0 }}>Bibliothèque DA</h1>
-      <p className="muted">
-        Référentiel central des trames/prompts qui alimente toutes les générations IA. Versionnées.
-      </p>
+    <div className="stack">
+      <div className="cockpit-page-header">
+        <h1 className="cockpit-page-title">Bibliothèque DA</h1>
+        <p className="cockpit-page-sub">Trames · Prompts · Référentiel IA versionné</p>
+      </div>
 
       {trames.length === 0 ? (
         <EmptyState>Aucune trame disponible.</EmptyState>
@@ -42,6 +42,6 @@ export default async function BibliothequePage() {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }

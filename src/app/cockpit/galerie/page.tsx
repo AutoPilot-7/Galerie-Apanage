@@ -13,8 +13,11 @@ export default async function CockpitGaleriePage() {
   const pubs = await getData().listPublications();
 
   return (
-    <main className="container stack">
-      <h1 style={{ margin: 0 }}>Galerie — publier / dépublier</h1>
+    <div className="stack">
+      <div className="cockpit-page-header">
+        <h1 className="cockpit-page-title">Galerie</h1>
+        <p className="cockpit-page-sub">Publier · Dépublier les propositions</p>
+      </div>
 
       {pubs.length === 0 ? (
         <EmptyState>Aucune proposition publiée.</EmptyState>
@@ -51,6 +54,6 @@ export default async function CockpitGaleriePage() {
           </table>
         </div>
       )}
-    </main>
+    </div>
   );
 }
