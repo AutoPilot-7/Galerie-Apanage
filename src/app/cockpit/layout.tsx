@@ -1,9 +1,6 @@
-// ============================================================================
-// Galerie Apanage — Cockpit commissaire : shell + navigation (5 entrées, cf. §4)
-// Pipeline · Galerie · Pilotage · Bibliothèque DA · Réglages.
-// ============================================================================
-
 import Link from 'next/link';
+import { SubmitButton } from '@/components/forms';
+import { seDeconnecterAction } from '@/app/auth/actions';
 
 export default function CockpitLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +16,12 @@ export default function CockpitLayout({ children }: { children: React.ReactNode 
             <Link href="/cockpit/reglages">Réglages</Link>
           </nav>
         </div>
-        <Link href="/" className="small muted">Vitrine ↗</Link>
+        <div className="row" style={{ alignItems: 'center', gap: 12 }}>
+          <Link href="/" className="small muted">Vitrine ↗</Link>
+          <form action={seDeconnecterAction}>
+            <SubmitButton>Déconnexion</SubmitButton>
+          </form>
+        </div>
       </header>
       <main className="container">{children}</main>
     </>
