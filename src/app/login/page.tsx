@@ -1,12 +1,7 @@
-// ============================================================================
-// Galerie Apanage — Login (magic-link). Connexion par lien e-mail sans mot de
-// passe (Portail client + Cockpit). En mode mock : accès direct dev.
-// ============================================================================
-
-import Link from ‘next/link’;
-import { env } from ‘@/lib/env’;
-import { SubmitButton } from ‘@/components/forms’;
-import { connexionDirecteAction } from ‘./actions’;
+import Link from 'next/link';
+import { env } from '@/lib/env';
+import { SubmitButton } from '@/components/forms';
+import { connexionDirecteAction } from './actions';
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ sent?: string; error?: string; next?: string }> }) {
   const sp = await searchParams;
@@ -29,7 +24,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <input type="hidden" name="email" value="client@galerie-apanage.fr" />
               <SubmitButton>Entrer comme client</SubmitButton>
             </form>
-            {sp.error && <p className="small" style={{ color: ‘var(--danger)’ }}>Erreur : {sp.error}</p>}
+            {sp.error && <p className="small" style={{ color: 'var(--danger)' }}>Erreur : {sp.error}</p>}
           </div>
         ) : (
           <div className="stack">
