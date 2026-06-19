@@ -20,6 +20,7 @@ import {
 } from '@/app/actions';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const DOC_TYPES: DocumentType[] = ['DEVIS', 'DOCUMENT_REMISE', 'LETTRE_REMISE', 'CERTIFICAT_IMPORT', 'CARTE_VISITE', 'CARTON_INVITATION', 'ENVELOPPE'];
 const dt = (iso: string | null) => (iso ? new Date(iso).toLocaleString('fr-FR') : '—');

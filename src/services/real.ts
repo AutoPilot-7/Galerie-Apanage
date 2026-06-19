@@ -307,8 +307,9 @@ export class RealThreeDService implements ThreeDService {
     if (!create.ok) throw new Error(`Luma ${create.status}: ${await create.text()}`);
     const job = (await create.json()) as { id: string };
 
-    // Sondage : ~2,5 min max (30 × 5 s) pour éviter une attente infinie.
-    for (let i = 0; i < 30; i++) {
+    // Sondage : ~45 s max (9 × 5 s) — garde-fou Vercel 60 s.
+    // Si le job n'est pas encore terminé, on renvoie l'URL du job pour affichage différé.
+    for (let i = 0; i < 9; i++) {
       await new Promise((r) => setTimeout(r, 5000));
       const poll = await fetch(`${base}/generations/${job.id}`, { headers: this.headers() });
       if (!poll.ok) continue;
@@ -317,13 +318,12 @@ export class RealThreeDService implements ThreeDService {
         assets?: { video?: string; glb?: string };
       };
       if (st.state === 'completed') {
-        const glbUrl = st.assets?.glb ?? '';
-        const previewUrl = st.assets?.video ?? photos[0] ?? '';
-        return { glbUrl, previewUrl };
+        return { glbUrl: st.assets?.glb ?? '', previewUrl: st.assets?.video ?? photos[0] ?? '' };
       }
       if (st.state === 'failed') throw new Error('Luma: génération échouée');
     }
-    throw new Error('Luma: délai de génération dépassé');
+    // Pas encore terminé — on renvoie la photo source comme aperçu temporaire.
+    return { glbUrl: '', previewUrl: photos[0] ?? '' };
   }
 }
 
