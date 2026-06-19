@@ -66,6 +66,11 @@ export default async function VitrinePage() {
           <div className="hero-stage" aria-hidden="true">
             <div className="hero-stage-grid" />
             <div className="hero-stage-glow" />
+            <svg className="hero-stage-monogram" viewBox="0 0 90 112" aria-hidden="true">
+              <rect x="12" y="6" width="66" height="100" rx="3" fill="none" stroke="currentColor" strokeWidth="1.2" />
+              <text x="45" y="74" fontFamily="Marcellus,serif" fontSize="56" fill="currentColor" textAnchor="middle">A</text>
+              <rect x="34" y="84" width="22" height="2" fill="currentColor" opacity="0.5" />
+            </svg>
           </div>
 
         </div>
