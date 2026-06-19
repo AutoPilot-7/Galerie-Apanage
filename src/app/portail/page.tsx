@@ -43,13 +43,18 @@ export default async function PortailPage({ searchParams }: { searchParams: Prom
       ) : (
         <div className="stack">
           {visibles.map((d) => (
-            <Link key={d.id} href={`/portail/dossiers/${d.id}`} className="card stack" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="between">
-                <strong>{d.vehiculeMarque} {d.vehiculeModele}</strong>
-                <StatutBadge statut={d.statut} />
+            <Link key={d.id} href={`/portail/dossiers/${d.id}`} className="card portail-dossier-card">
+              <div className="between portail-dossier-head">
+                <div>
+                  <p className="portail-dossier-ref">{d.reference}</p>
+                  <span className="portail-dossier-title">{d.vehiculeMarque} {d.vehiculeModele}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                  <StatutBadge statut={d.statut} />
+                  <span className="portail-dossier-arrow">→</span>
+                </div>
               </div>
               <FriseStatut statut={d.statut} />
-              <span className="small mono muted">{d.reference}</span>
             </Link>
           ))}
         </div>

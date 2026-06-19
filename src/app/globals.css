@@ -1410,6 +1410,50 @@ a.card:hover .frise-noeud[data-courant] {
   box-shadow: 0 0 0 6px rgba(84, 43, 61, 0.18);
 }
 
+.portail-dossier-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-decoration: none;
+  color: inherit;
+}
+.portail-dossier-head {
+  align-items: flex-start;
+}
+.portail-dossier-ref {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-prune);
+  margin: 0 0 var(--space-1);
+}
+.portail-dossier-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-encre);
+  line-height: 1.15;
+}
+.portail-dossier-arrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-greige);
+  transition:
+    color     var(--dur-fast) var(--ease-luxury),
+    transform var(--dur-fast) var(--ease-luxury);
+  display: inline-block;
+}
+a.card:hover .portail-dossier-arrow {
+  color: var(--color-prune);
+  transform: translateX(3px);
+}
+a.card:hover .portail-dossier-title {
+  color: var(--color-prune);
+  transition: color var(--dur-fast) var(--ease-luxury);
+}
+
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
