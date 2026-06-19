@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { SubmitButton } from '@/components/forms';
 import { seDeconnecterAction } from '@/app/auth/actions';
 import { LogoMark } from '@/components/ui';
+import { NavLinks } from '@/components/nav';
 
 export default function CockpitLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,11 +14,13 @@ export default function CockpitLayout({ children }: { children: React.ReactNode 
             Galerie <span>Apanage</span> · Cockpit
           </Link>
           <nav className="nav">
-            <Link href="/cockpit">Pipeline</Link>
-            <Link href="/cockpit/galerie">Galerie</Link>
-            <Link href="/cockpit/pilotage">Pilotage</Link>
-            <Link href="/cockpit/bibliotheque">Bibliothèque DA</Link>
-            <Link href="/cockpit/reglages">Réglages</Link>
+            <NavLinks items={[
+              { href: '/cockpit', label: 'Pipeline', exact: true },
+              { href: '/cockpit/galerie', label: 'Galerie' },
+              { href: '/cockpit/pilotage', label: 'Pilotage' },
+              { href: '/cockpit/bibliotheque', label: 'Bibliothèque DA' },
+              { href: '/cockpit/reglages', label: 'Réglages' },
+            ]} />
           </nav>
         </div>
         <div className="row" style={{ alignItems: 'center', gap: 12 }}>

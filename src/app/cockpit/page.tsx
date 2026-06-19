@@ -63,7 +63,7 @@ export default async function PipelinePage() {
                 <StatutBadge statut={statut} />
                 <span className="kanban-count muted small">{colonne.length}</span>
               </div>
-              <p className="muted small" style={{ margin: 0 }}>{STATUT_META[statut].description}</p>
+              <p className="kanban-desc">{STATUT_META[statut].description}</p>
 
               {colonne.map((d) => {
                 const sorties = transitionsDepuis(d.statut).filter((t) => t.to !== d.statut);
