@@ -15,11 +15,15 @@
     "db:push": "supabase db push"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.4",
     "next": "^15.3.9",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "three": "^0.184.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
