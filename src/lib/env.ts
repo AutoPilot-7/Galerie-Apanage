@@ -47,16 +47,20 @@ export const env = {
     provider: read('LLM_PROVIDER') ?? 'mock',
     mistralKey: read('MISTRAL_API_KEY'),
     mistralModel: read('MISTRAL_MODEL') ?? 'mistral-large-latest',
+    openrouterKey: read('OPENROUTER_API_KEY'),
+    openrouterModel: read('OPENROUTER_MODEL') ?? 'mistralai/mistral-large',
     get isReal() {
-      return realIf(this.mistralKey) && this.provider !== 'mock';
+      return realIf(this.mistralKey, this.openrouterKey) && this.provider !== 'mock';
     },
   },
   asr: {
     provider: read('ASR_PROVIDER') ?? 'mock',
     assemblyaiKey: read('ASSEMBLYAI_API_KEY'),
     gladiaKey: read('GLADIA_API_KEY'),
+    groqKey: read('GROQ_API_KEY'),
+    groqModel: read('GROQ_WHISPER_MODEL') ?? 'whisper-large-v3-turbo',
     get isReal() {
-      return realIf(this.assemblyaiKey, this.gladiaKey) && this.provider !== 'mock';
+      return realIf(this.assemblyaiKey, this.gladiaKey, this.groqKey) && this.provider !== 'mock';
     },
   },
   image: {

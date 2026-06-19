@@ -30,22 +30,42 @@ function nonBranche(service: string, methode: string): never {
   );
 }
 
-// --- 1. LLM — Mistral (UE) --------------------------------------------------
+// --- 1. LLM — Mistral (UE) ou OpenRouter (passerelle multi-modèles) ---------
+// Les deux exposent une API compatible OpenAI (/chat/completions). On choisit
+// l'endpoint + la clé + le modèle selon le provider sélectionné dans l'env.
 export class RealLLMService implements LLMService {
   readonly name = 'LLMService';
   readonly mode = 'real' as const;
-  readonly provider = 'mistral';
+  readonly provider = env.llm.provider === 'openrouter' ? 'openrouter' : 'mistral';
+
+  private endpoint() {
+    return this.provider === 'openrouter'
+      ? 'https://openrouter.ai/api/v1/chat/completions'
+      : 'https://api.mistral.ai/v1/chat/completions';
+  }
+  private apiKey() {
+    return this.provider === 'openrouter' ? env.llm.openrouterKey : env.llm.mistralKey;
+  }
+  private model() {
+    return this.provider === 'openrouter' ? env.llm.openrouterModel : env.llm.mistralModel;
+  }
 
   private async call(messages: ChatMessage[]): Promise<string> {
-    const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${this.apiKey()}`,
+    };
+    if (this.provider === 'openrouter') {
+      // En-têtes recommandés par OpenRouter pour l'attribution.
+      headers['HTTP-Referer'] = env.site.url;
+      headers['X-Title'] = 'Galerie Apanage';
+    }
+    const res = await fetch(this.endpoint(), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${env.llm.mistralKey}`,
-      },
-      body: JSON.stringify({ model: env.llm.mistralModel, messages }),
+      headers,
+      body: JSON.stringify({ model: this.model(), messages }),
     });
-    if (!res.ok) throw new Error(`Mistral ${res.status}: ${await res.text()}`);
+    if (!res.ok) throw new Error(`${this.provider} ${res.status}: ${await res.text()}`);
     const json = (await res.json()) as { choices: { message: { content: string } }[] };
     return json.choices[0]?.message?.content ?? '';
   }
@@ -77,14 +97,23 @@ export class RealImageService implements ImageService {
   readonly mode = 'real' as const;
   readonly provider = 'pollinations';
 
-  async generate({ prompt }: { prompt: string; ratio?: string }) {
+  private dims(ratio?: string) {
+    if (ratio === '16:9') return { width: 1280, height: 720 };
+    if (ratio === '4:3') return { width: 1024, height: 768 };
+    return { width: 1024, height: 1024 };
+  }
+  private build(prompt: string, ratio?: string) {
+    const { width, height } = this.dims(ratio);
+    const qs = new URLSearchParams({ width: String(width), height: String(height), nologo: 'true' });
+    if (env.image.pollinationsKey) qs.set('token', env.image.pollinationsKey);
     // Pollinations sert l'image directement via URL (pas d'appel à attendre).
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
-    return { url };
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${qs.toString()}`;
+  }
+  async generate({ prompt, ratio }: { prompt: string; ratio?: string }) {
+    return { url: this.build(prompt, ratio) };
   }
   async retouch({ sourceUrl, prompt }: { sourceUrl: string; prompt: string }) {
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(`${prompt} (ref: ${sourceUrl})`)}`;
-    return { url };
+    return { url: this.build(`${prompt} (ref: ${sourceUrl})`) };
   }
 }
 
@@ -170,12 +199,60 @@ export class RealStorageService implements StorageService {
 // (le mock reste actif par défaut ; ces classes ne sont instanciées QUE si la
 //  clé correspondante est fournie ET le provider ≠ mock)
 
+// --- 2. ASR — Groq Whisper (large-v3) ---------------------------------------
+// Groq expose une API compatible OpenAI pour la transcription. On récupère
+// l'audio (URL ou base64), on le POST en multipart à /audio/transcriptions.
 export class RealASRService implements ASRService {
   readonly name = 'ASRService';
   readonly mode = 'real' as const;
   readonly provider = env.asr.provider;
-  async transcribe(): ReturnType<ASRService['transcribe']> {
-    return nonBranche('ASRService', 'transcribe (AssemblyAI/Gladia)');
+
+  async transcribe({
+    audioUrl,
+    audioBase64,
+  }: {
+    audioUrl?: string;
+    audioBase64?: string;
+  }): ReturnType<ASRService['transcribe']> {
+    if (env.asr.provider !== 'groq' || !env.asr.groqKey) {
+      return nonBranche('ASRService', 'transcribe (provider=groq + GROQ_API_KEY requis)');
+    }
+    // Charge les octets audio depuis l'URL ou le base64 fourni.
+    let bytes: ArrayBuffer;
+    if (audioUrl) {
+      const r = await fetch(audioUrl);
+      if (!r.ok) throw new Error(`ASR: téléchargement audio ${r.status}`);
+      bytes = await r.arrayBuffer();
+    } else if (audioBase64) {
+      const b64 = audioBase64.includes(',') ? audioBase64.split(',')[1] : audioBase64;
+      bytes = Uint8Array.from(Buffer.from(b64, 'base64')).buffer;
+    } else {
+      throw new Error('ASR: audioUrl ou audioBase64 requis');
+    }
+
+    const form = new FormData();
+    form.append('file', new Blob([bytes]), 'audio.mp3');
+    form.append('model', env.asr.groqModel);
+    form.append('language', 'fr');
+    form.append('response_format', 'verbose_json');
+
+    const res = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${env.asr.groqKey}` },
+      body: form,
+    });
+    if (!res.ok) throw new Error(`Groq Whisper ${res.status}: ${await res.text()}`);
+    const json = (await res.json()) as {
+      text: string;
+      segments?: { start: number; end: number; text: string }[];
+    };
+    const segments = (json.segments ?? []).map((s) => ({
+      speaker: 'SPEAKER_0', // Whisper ne diarise pas : un seul locuteur par défaut.
+      text: s.text.trim(),
+      start: s.start,
+      end: s.end,
+    }));
+    return { texte: json.text, segments };
   }
 }
 
@@ -191,12 +268,62 @@ export class RealScraperService implements ScraperService {
   }
 }
 
+// --- 5. 3D — Luma (Genie / Dream Machine) -----------------------------------
+// Luma génère depuis des images. L'API est asynchrone : on crée un job puis on
+// le sonde jusqu'à complétion (avec garde-fou de timeout). Renvoie l'URL GLB +
+// un aperçu. À défaut de GLB, on retombe sur la première photo source en preview.
 export class RealThreeDService implements ThreeDService {
   readonly name = 'ThreeDService';
   readonly mode = 'real' as const;
   readonly provider = env.threed.provider;
-  async generateScene(): ReturnType<ThreeDService['generateScene']> {
-    return nonBranche('ThreeDService', 'generateScene (Luma/higgsfield)');
+
+  private headers() {
+    return {
+      Authorization: `Bearer ${env.threed.lumaKey}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+  }
+
+  async generateScene({
+    photos,
+    label,
+  }: {
+    photos: string[];
+    label?: string;
+  }): ReturnType<ThreeDService['generateScene']> {
+    if (env.threed.provider !== 'luma' || !env.threed.lumaKey) {
+      return nonBranche('ThreeDService', 'generateScene (provider=luma + LUMA_API_KEY requis)');
+    }
+    const base = 'https://api.lumalabs.ai/dream-machine/v1';
+    const create = await fetch(`${base}/generations`, {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify({
+        prompt: label ?? 'Présentation produit automobile de luxe, scène de galerie',
+        keyframes: photos[0] ? { frame0: { type: 'image', url: photos[0] } } : undefined,
+      }),
+    });
+    if (!create.ok) throw new Error(`Luma ${create.status}: ${await create.text()}`);
+    const job = (await create.json()) as { id: string };
+
+    // Sondage : ~2,5 min max (30 × 5 s) pour éviter une attente infinie.
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 5000));
+      const poll = await fetch(`${base}/generations/${job.id}`, { headers: this.headers() });
+      if (!poll.ok) continue;
+      const st = (await poll.json()) as {
+        state: string;
+        assets?: { video?: string; glb?: string };
+      };
+      if (st.state === 'completed') {
+        const glbUrl = st.assets?.glb ?? '';
+        const previewUrl = st.assets?.video ?? photos[0] ?? '';
+        return { glbUrl, previewUrl };
+      }
+      if (st.state === 'failed') throw new Error('Luma: génération échouée');
+    }
+    throw new Error('Luma: délai de génération dépassé');
   }
 }
 
