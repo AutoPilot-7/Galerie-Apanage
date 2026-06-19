@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { getData } from '@/data';
 import { LogoMark } from '@/components/ui';
 import { HeroStageClient } from '@/components/hero-stage-client';
+import { CSSArtifact } from '@/components/css-artifact';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,11 +64,12 @@ export default async function VitrinePage() {
             </p>
           </div>
 
-          {/* Scène 3D — Canvas en overlay, CSS grid/glow = fallback SSR */}
+          {/* Scène 3D — CSS artifact permanent + WebGL overlay optionnel */}
           <div className="hero-stage" aria-hidden="true">
-            <div className="hero-stage-grid" />
-            <div className="hero-stage-glow" />
-            <HeroStageClient />
+            <CSSArtifact />
+            <div style={{ position: 'absolute', inset: 0, zIndex: 10 }}>
+              <HeroStageClient />
+            </div>
           </div>
 
         </div>
@@ -110,10 +112,10 @@ export default async function VitrinePage() {
                     <img src={p.photos[0]} alt={p.titre ?? ''} />
                   ) : (
                     <div className="vitrine-card-placeholder">
-                      {/* Logo mark comme placeholder élégant */}
-                      <svg width="28" height="35" viewBox="0 0 90 112" aria-hidden="true" style={{ color: 'var(--color-greige)' }}>
-                        <rect x="12" y="6" width="66" height="100" rx="3" fill="none" stroke="currentColor" strokeWidth="2" />
-                        <text x="45" y="74" fontFamily="Marcellus,serif" fontSize="56" fill="currentColor" textAnchor="middle">A</text>
+                      <svg width="100" height="128" viewBox="0 0 78 100" fill="none" aria-hidden="true" style={{ position: 'relative', zIndex: 1, opacity: 0.07 }}>
+                        <rect x="2" y="2" width="74" height="96" stroke="#F1ECE3" strokeWidth="2" />
+                        <text x="39" y="62" fontFamily="Marcellus,serif" fontSize="56" fill="#F1ECE3" textAnchor="middle">A</text>
+                        <rect x="20" y="76" width="38" height="3" fill="#542B3D" />
                       </svg>
                     </div>
                   )}

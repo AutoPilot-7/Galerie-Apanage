@@ -499,15 +499,27 @@ a.brand:hover { text-decoration: none; }
   animation: heroReveal var(--dur-slow) var(--ease-reveal) 0.75s both;
 }
 
-/* Bouton principal sur fond sombre : fond platre */
+/* Bouton principal sur fond sombre : fond prune signature */
 .hero-actions .btn-primary {
-  background: var(--color-platre);
-  color: var(--color-encre);
-  border-color: var(--color-platre);
+  background: var(--color-prune);
+  color: var(--color-platre);
+  border-color: var(--color-prune);
+  border-radius: 0;
+  letter-spacing: 0.1em;
+  padding: 14px 32px;
+  font-size: var(--text-xs);
+  transition: background 400ms cubic-bezier(0.25, 0, 0, 1), border-color 400ms cubic-bezier(0.25, 0, 0, 1);
 }
 .hero-actions .btn-primary:hover {
-  background: var(--color-platre-2);
-  border-color: var(--color-platre-2);
+  background: #3f2030;
+  border-color: #3f2030;
+}
+.hero-actions .btn-ghost {
+  border-radius: 0;
+  padding: 14px 32px;
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  transition: background 400ms cubic-bezier(0.25, 0, 0, 1), border-color 400ms cubic-bezier(0.25, 0, 0, 1);
 }
 
 .hero-tagline {
@@ -645,16 +657,15 @@ a.brand:hover { text-decoration: none; }
 .vitrine-card {
   background: var(--color-platre-2);
   border: 1px solid var(--hair);
-  border-radius: var(--radius);
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
   transition:
-    box-shadow var(--dur-base) var(--ease-luxury),
-    transform  var(--dur-base) var(--ease-luxury);
+    border-color 400ms cubic-bezier(0.25, 0, 0, 1),
+    transform    400ms cubic-bezier(0.25, 0, 0, 1);
 }
 .vitrine-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-3px);
+  border-color: rgba(84, 43, 61, 0.35);
+  transform: translateY(-2px);
 }
 
 .vitrine-card-image {
@@ -671,16 +682,24 @@ a.brand:hover { text-decoration: none; }
 }
 .vitrine-card:hover .vitrine-card-image img { transform: scale(1.04); }
 
-/* Placeholder catalogue — grille croisée + dégradé */
+/* Placeholder catalogue — encre sombre avec grille + A logomark */
 .vitrine-card-placeholder {
   width: 100%;
   height: 100%;
-  background:
-    repeating-linear-gradient(135deg, rgba(28,26,23,.05) 0 1px, transparent 1px 13px),
-    linear-gradient(155deg, #E9E1D3, #D7CDBA);
+  background: var(--color-encre);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.vitrine-card-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(241,236,227,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241,236,227,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 .vitrine-card-placeholder svg {
   width: 28px;
@@ -1497,4 +1516,140 @@ a.card:hover .portail-dossier-title {
   .topbar .nav { display: none; }
   .kanban-wrap { margin: 0 calc(-1 * var(--space-4)); padding-left: var(--space-4); padding-right: var(--space-4); }
   .login-wrap { padding: var(--space-6); }
+}
+
+/* ==========================================================================
+   LOVABLE DESIGN SYSTEM — grid-lines, prune-glow, CSS artifact, diamond pulse
+   Portés depuis la maquette Lovable pour hisser le niveau visuel.
+   ========================================================================== */
+
+/* ── Grille atmosphérique — superposée sur sections sombres ──────────────── */
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(241, 236, 227, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241, 236, 227, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* ── Halo prune — signature en bas-gauche ────────────────────────────────── */
+.prune-glow {
+  background: radial-gradient(
+    circle at 12% 88%,
+    rgba(84, 43, 61, 0.55) 0%,
+    rgba(84, 43, 61, 0.12) 32%,
+    transparent 60%
+  );
+}
+
+/* ── Artefact CSS 3D — anneaux rotatifs platine + cœur prune ────────────── */
+.artifact-stage {
+  perspective: 900px;
+}
+
+.artifact-spin {
+  transform-style: preserve-3d;
+  animation: artifact-rotate 18s linear infinite;
+}
+
+@keyframes artifact-rotate {
+  from { transform: rotateX(-18deg) rotateY(0deg); }
+  to   { transform: rotateX(-18deg) rotateY(360deg); }
+}
+
+.artifact-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(200, 184, 164, 0.35);
+  border-radius: 50%;
+}
+
+/* ── Particules scintillantes ────────────────────────────────────────────── */
+@keyframes sparkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50%       { opacity: 0.9;  transform: scale(1.2); }
+}
+
+.sparkle-dot {
+  animation: sparkle 3.5s ease-in-out infinite;
+}
+
+/* ── Pulse sur le nœud actif de la frise ─────────────────────────────────── */
+@keyframes diamond-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(84, 43, 61, 0.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(84, 43, 61, 0); }
+}
+
+.frise-noeud[data-courant] {
+  animation: diamond-pulse 2.4s cubic-bezier(0.25, 0, 0, 1) infinite;
+}
+
+/* ── Composant artefact CSS — zone de scène 3D ───────────────────────────── */
+.css-artifact {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-encre);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.css-artifact-stage {
+  perspective: 900px;
+  width: 260px;
+  height: 260px;
+  position: relative;
+  z-index: 2;
+}
+
+.css-artifact-spin {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: artifact-rotate 18s linear infinite;
+  position: relative;
+}
+
+.css-artifact-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(200, 184, 164, 0.32);
+  border-radius: 50%;
+}
+
+.css-artifact-ring:nth-child(2) { transform: rotateY(60deg); }
+.css-artifact-ring:nth-child(3) { transform: rotateY(120deg); }
+.css-artifact-ring:nth-child(4) { transform: rotateX(70deg); border-color: rgba(84,43,61,0.5); }
+.css-artifact-ring:nth-child(5) { transform: rotateX(70deg) rotateY(0deg) scale(0.7); }
+
+.css-artifact-core {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 24px; height: 24px;
+  background: var(--color-prune);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 40px 8px rgba(84, 43, 61, 0.5);
+  z-index: 3;
+}
+
+.css-artifact-label {
+  position: absolute;
+  bottom: var(--space-5);
+  left: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(241, 236, 227, 0.3);
+  z-index: 4;
+}
+
+.css-artifact-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-greige);
+  animation: sparkle 3.5s ease-in-out infinite;
 }
