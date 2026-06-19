@@ -1,5 +1,6 @@
 // ============================================================================
-// Galerie Apanage — VITRINE (accueil public). Fenêtre publique sur la base.
+// Galerie Apanage — VITRINE (accueil public)
+// Présentation uniquement — logique et données inchangées.
 // ============================================================================
 
 import Link from 'next/link';
@@ -12,56 +13,100 @@ export default async function VitrinePage() {
 
   return (
     <>
-      <header className="topbar">
-        <div className="brand">Galerie <span>Apanage</span></div>
-        <nav className="nav">
-          <Link href="/">Vitrine</Link>
-          <Link href="/vitrine/collection">La collection</Link>
-          <Link href="/vitrine/processus">Processus &amp; prix</Link>
-          <Link href="/login" className="btn btn-primary">Accès client / commissaire</Link>
-        </nav>
-      </header>
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
+      <section className="hero">
+        <header className="hero-header">
+          <div className="brand">Galerie <span>Apanage</span></div>
+          <nav className="nav">
+            <Link href="/">Vitrine</Link>
+            <Link href="/vitrine/collection">La collection</Link>
+            <Link href="/vitrine/processus">Processus &amp; prix</Link>
+            <Link href="/login" className="btn btn-primary">Accès client</Link>
+          </nav>
+        </header>
 
-      <main className="container stack">
-        <section className="card" style={{ textAlign: 'center', padding: '40px 20px' }}>
-          <h1 style={{ fontSize: 32, marginBottom: 8 }}>L’acquisition automobile, pensée comme une galerie d’art</h1>
-          <p className="muted" style={{ maxWidth: 680, margin: '0 auto' }}>
-            Chaque demande devient un <strong>Dossier d’acquisition</strong> piloté de bout en bout : brief, repérage,
-            propositions, acquisition, livraison. L’IA accélère, le commissaire valide à chaque étape à enjeu.
-          </p>
-          <div className="row" style={{ justifyContent: 'center', marginTop: 16 }}>
-            <Link href="/login" className="btn btn-gold">Démarrer une demande</Link>
-            <Link href="/vitrine/collection" className="btn">Voir la collection</Link>
+        <div className="hero-inner">
+          {/* Bloc éditorial */}
+          <div className="hero-content">
+            <p className="hero-eyebrow">Acquisition automobile d&apos;exception</p>
+            <h1 className="hero-title">
+              L&apos;acquisition automobile,<br />
+              <em>pensée comme</em><br />
+              une galerie d&apos;art.
+            </h1>
+            <div className="hero-divider" aria-hidden="true" />
+            <p className="hero-body">
+              Chaque demande devient un dossier piloté de bout en bout.<br />
+              L&apos;IA accélère. Le commissaire valide. Vous choisissez.
+            </p>
+            <div className="hero-actions">
+              <Link href="/login" className="btn btn-primary">Démarrer une demande</Link>
+              <Link href="/vitrine/collection" className="btn btn-ghost">Voir la collection</Link>
+            </div>
           </div>
-        </section>
 
-        <section className="stack">
-          <div className="between">
-            <h2>La collection</h2>
-            <Link href="/vitrine/collection" className="small">Tout voir →</Link>
+          {/* Slot 3D — React Three Fiber remplacera ce div à l'étape 2 */}
+          <div className="hero-stage" aria-hidden="true">
+            <div className="hero-stage-glow" />
           </div>
-          {publications.length === 0 ? (
-            <p className="muted">Aucune pièce publiée pour le moment.</p>
-          ) : (
-            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
-              {publications.slice(0, 6).map((p) => (
-                <article key={p.id} className="card">
+        </div>
+
+        <div className="hero-scroll-hint" aria-hidden="true">
+          <span>Défiler</span>
+          <svg width="1" height="48" viewBox="0 0 1 48" fill="none">
+            <line x1="0.5" y1="0" x2="0.5" y2="48" stroke="currentColor" strokeWidth="1" />
+          </svg>
+        </div>
+      </section>
+
+      {/* ── COLLECTION ───────────────────────────────────────────────────── */}
+      <main
+        className="container"
+        style={{ paddingTop: 'var(--space-20)', paddingBottom: 'var(--space-24)' }}
+      >
+        <div className="between" style={{ marginBottom: 'var(--space-10)' }}>
+          <div>
+            <h2 className="section-heading">La collection</h2>
+            <p className="section-subline">Pièces sélectionnées par notre commissaire</p>
+          </div>
+          <Link href="/vitrine/collection" className="link-arrow">
+            Tout voir →
+          </Link>
+        </div>
+
+        {publications.length === 0 ? (
+          <p className="muted">Aucune pièce publiée pour le moment.</p>
+        ) : (
+          <div className="vitrine-grid">
+            {publications.slice(0, 6).map((p) => (
+              <article key={p.id} className="vitrine-card">
+                <div className="vitrine-card-image">
                   {p.photos[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.photos[0]} alt={p.titre ?? ''} style={{ width: '100%', borderRadius: 8, marginBottom: 8 }} />
-                  ) : null}
-                  <h3 style={{ margin: 0 }}>{p.titre ?? 'Pièce de collection'}</h3>
-                  <p className="muted small">{(p.description ?? '').slice(0, 120)}</p>
-                  <span className="small mono">{p.dossierReference}</span>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
+                    <img src={p.photos[0]} alt={p.titre ?? ''} />
+                  ) : (
+                    <div className="vitrine-card-placeholder" />
+                  )}
+                </div>
+                <div className="vitrine-card-body">
+                  <h3 className="vitrine-card-title">{p.titre ?? 'Pièce de collection'}</h3>
+                  {p.description && (
+                    <p className="vitrine-card-desc">
+                      {p.description.slice(0, 100)}
+                    </p>
+                  )}
+                  <span className="vitrine-card-ref mono">{p.dossierReference}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </main>
 
-      <footer className="container muted small">
-        <Link href="/mentions">Mentions légales &amp; CGV</Link> · Galerie Apanage — France &amp; UE
+      <footer className="vitrine-footer container muted small">
+        <Link href="/mentions">Mentions légales &amp; CGV</Link>
+        {' · '}
+        Galerie Apanage — France &amp; UE
       </footer>
     </>
   );
