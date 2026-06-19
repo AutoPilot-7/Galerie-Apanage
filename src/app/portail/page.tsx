@@ -22,8 +22,11 @@ export default async function PortailPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="stack">
-      <div className="between">
-        <h1 style={{ margin: 0 }}>Mes dossiers</h1>
+      <div className="between" style={{ alignItems: 'flex-end', marginBottom: 'var(--space-2)' }}>
+        <div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-ink-45)', margin: '0 0 var(--space-1)' }}>Espace client</p>
+          <h1 style={{ margin: 0, fontFamily: 'var(--font-serif)', fontWeight: 400, fontSize: 'var(--text-3xl)', color: 'var(--color-encre)', letterSpacing: '0.02em' }}>Mes dossiers</h1>
+        </div>
         {mock && (
           <form className="row small" style={{ alignItems: 'center', gap: 6 }}>
             <span className="muted">Démo — vue client :</span>

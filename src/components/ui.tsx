@@ -87,17 +87,63 @@ export function HitlNotice({ children }: { children: ReactNode }) {
 }
 
 export function EmptyState({ children }: { children: ReactNode }) {
-  return <p className="muted small" style={{ padding: '8px 0' }}>{children}</p>;
+  return (
+    <p style={{
+      fontFamily: 'var(--font-mono)',
+      fontSize: 'var(--text-xs)',
+      letterSpacing: '.12em',
+      textTransform: 'uppercase',
+      color: 'var(--color-ink-45)',
+      padding: 'var(--space-4) 0',
+      margin: 0,
+    }}>
+      {children}
+    </p>
+  );
 }
 
 export function SectionTitle({ n, title, hint }: { n?: number; title: string; hint?: string }) {
   return (
-    <div className="between" style={{ marginBottom: 8 }}>
-      <h3 style={{ margin: 0 }}>
-        {n !== undefined && <span className="muted">{n} · </span>}
+    <div className="between" style={{
+      marginBottom: 'var(--space-4)',
+      paddingBottom: 'var(--space-3)',
+      borderBottom: '1px solid var(--hair)',
+    }}>
+      <h3 style={{
+        margin: 0,
+        fontFamily: 'var(--font-serif)',
+        fontWeight: 400,
+        fontSize: 'var(--text-lg)',
+        letterSpacing: '0.02em',
+        color: 'var(--color-encre)',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 'var(--space-2)',
+      }}>
+        {n !== undefined && (
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--text-xs)',
+            letterSpacing: '.14em',
+            color: 'var(--color-prune)',
+            textTransform: 'uppercase',
+          }}>
+            {String(n).padStart(2, '0')}
+          </span>
+        )}
         {title}
       </h3>
-      {hint && <span className="muted small">{hint}</span>}
+      {hint && (
+        <span style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 'var(--text-xs)',
+          letterSpacing: '.1em',
+          textTransform: 'uppercase',
+          color: 'var(--color-ink-45)',
+        }}>
+          {hint}
+        </span>
+      )}
     </div>
   );
 }
