@@ -11,6 +11,7 @@
 import { env } from '@/lib/env';
 import { createAdminClient } from '@/lib/supabase/admin';
 import {
+  AnnonceExtraite,
   ASRService,
   BankingService,
   ChatMessage,
@@ -260,9 +261,58 @@ export class RealScraperService implements ScraperService {
   readonly name = 'ScraperService';
   readonly mode = 'real' as const;
   readonly provider = env.scraper.provider;
-  async extract(): ReturnType<ScraperService['extract']> {
-    return nonBranche('ScraperService', 'extract');
+
+  async extract({ url }: { url: string }): ReturnType<ScraperService['extract']> {
+    // Fetch du HTML brut de l'annonce (User-Agent navigateur pour éviter les 403).
+    let html = '';
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GalerieApanage/1.0)' },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (res.ok) html = await res.text();
+    } catch {
+      // Réseau indisponible — on continue avec un HTML vide, le LLM fera ce qu'il peut.
+    }
+
+    // Extraction via LLM : on lui donne le HTML tronqué (max 8 000 chars) + l'URL.
+    const llm = new RealLLMService();
+    const snippet = html.replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .slice(0, 8000);
+
+    const prompt = `Tu es un extracteur d'annonces automobiles. Extrait les informations de cette annonce et renvoie UNIQUEMENT un JSON valide (sans markdown) avec les champs : titre, prix (nombre ou null), devise ("EUR" ou null), marque, modele, annee (nombre ou null), kilometrage (nombre ou null), photos (tableau d'URLs ou []).
+
+URL : ${url}
+Contenu de la page :
+${snippet}`;
+
+    let parsed: Partial<AnnonceExtraite> = {};
+    try {
+      const raw = await llm['call']([{ role: 'user', content: prompt }]);
+      const jsonStr = raw.match(/\{[\s\S]*\}/)?.[0] ?? '{}';
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      // Le LLM n'a pas pu parser — on renvoie l'annonce vide avec l'URL.
+    }
+
+    return {
+      url,
+      titre: String(parsed.titre ?? url),
+      prix: typeof parsed.prix === 'number' ? parsed.prix : null,
+      devise: String(parsed.devise ?? 'EUR'),
+      marque: parsed.marque ? String(parsed.marque) : null,
+      modele: parsed.modele ? String(parsed.modele) : null,
+      annee: typeof parsed.annee === 'number' ? parsed.annee : null,
+      kilometrage: typeof parsed.kilometrage === 'number' ? parsed.kilometrage : null,
+      photos: Array.isArray(parsed.photos) ? parsed.photos : [],
+      provenanceOrigine: new URL(url).hostname,
+      brut: { html: snippet.slice(0, 500) },
+    };
   }
+
   async search(): ReturnType<ScraperService['search']> {
     return nonBranche('ScraperService', 'search');
   }
