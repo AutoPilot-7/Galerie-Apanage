@@ -5,26 +5,9 @@
 
 import Link from 'next/link';
 import { getData } from '@/data';
+import { LogoMark } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
-
-// Logo mark — A encadré, cartel prune — SVG inline pour éviter une image externe
-function LogoMark({ size = 22, light = false }: { size?: number; light?: boolean }) {
-  const h = Math.round(size * 1.25);
-  return (
-    <svg
-      width={size}
-      height={h}
-      viewBox="0 0 90 112"
-      aria-hidden="true"
-      style={{ color: light ? 'var(--color-platre)' : 'var(--color-encre)', flexShrink: 0 }}
-    >
-      <rect x="12" y="6" width="66" height="100" rx="3" fill="none" stroke="currentColor" strokeWidth="2.2" />
-      <text x="45" y="74" fontFamily="Marcellus,serif" fontSize="56" fill="currentColor" textAnchor="middle">A</text>
-      <rect x="34" y="84" width="22" height="2.6" fill={light ? 'var(--color-prune-soft)' : 'var(--color-prune)'} />
-    </svg>
-  );
-}
 
 export default async function VitrinePage() {
   const publications = await getData().listPublications();

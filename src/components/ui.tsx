@@ -9,6 +9,23 @@ import { DossierStatut } from '@/domain/types';
 import { STATUT_META, STATUTS_TUNNEL } from '@/domain/statut';
 import { ReactNode } from 'react';
 
+export function LogoMark({ size = 22, light = false }: { size?: number; light?: boolean }) {
+  const h = Math.round(size * 1.25);
+  return (
+    <svg
+      width={size}
+      height={h}
+      viewBox="0 0 90 112"
+      aria-hidden="true"
+      style={{ color: light ? 'var(--color-platre)' : 'var(--color-encre)', flexShrink: 0 }}
+    >
+      <rect x="12" y="6" width="66" height="100" rx="3" fill="none" stroke="currentColor" strokeWidth="2.2" />
+      <text x="45" y="74" fontFamily="Marcellus,serif" fontSize="56" fill="currentColor" textAnchor="middle">A</text>
+      <rect x="34" y="84" width="22" height="2.6" fill={light ? 'var(--color-prune-soft)' : 'var(--color-prune)'} />
+    </svg>
+  );
+}
+
 const eur = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
 export function Money({ value }: { value: number | null | undefined }) {
@@ -26,24 +43,33 @@ export function StatutBadge({ statut }: { statut: DossierStatut }) {
   );
 }
 
-/** Frise du tunnel (statut courant mis en avant). Utilisée portail + cockpit. */
+/** Frise du tunnel — nœuds losange avec ligne de connexion. */
 export function FriseStatut({ statut }: { statut: DossierStatut }) {
   const courantOrdre = STATUT_META[statut].ordre;
   return (
-    <div className="row" style={{ gap: 6, alignItems: 'center' }}>
+    <div className="frise-statut">
       {STATUTS_TUNNEL.map((s) => {
         const meta = STATUT_META[s];
         const atteint = meta.ordre <= courantOrdre;
+        const courant = s === statut;
         return (
-          <div key={s} className="small" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span
-              className="badge-dot"
-              style={{ background: atteint ? `var(--${meta.couleurToken})` : 'var(--border)', width: 10, height: 10 }}
+          <div
+            key={s}
+            className="frise-etape"
+            data-atteint={atteint ? '' : undefined}
+          >
+            <div
+              className="frise-noeud"
+              data-atteint={atteint && !courant ? '' : undefined}
+              data-courant={courant ? '' : undefined}
             />
-            <span style={{ color: atteint ? 'var(--ink)' : 'var(--muted)', fontWeight: s === statut ? 700 : 400 }}>
+            <span
+              className="frise-label"
+              data-atteint={atteint && !courant ? '' : undefined}
+              data-courant={courant ? '' : undefined}
+            >
               {meta.label}
             </span>
-            {meta.ordre < STATUTS_TUNNEL.length && <span className="muted">›</span>}
           </div>
         );
       })}

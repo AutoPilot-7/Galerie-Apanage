@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import { SubmitButton } from '@/components/forms';
 import { seDeconnecterAction } from '@/app/auth/actions';
+import { LogoMark } from '@/components/ui';
 
 export default function CockpitLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <header className="topbar">
         <div className="row" style={{ alignItems: 'center', gap: 20 }}>
-          <Link href="/cockpit" className="brand">Galerie <span>Apanage</span> · Cockpit</Link>
+          <Link href="/cockpit" className="brand">
+            <LogoMark size={18} />
+            Galerie <span>Apanage</span> · Cockpit
+          </Link>
           <nav className="nav">
             <Link href="/cockpit">Pipeline</Link>
             <Link href="/cockpit/galerie">Galerie</Link>
@@ -23,7 +27,9 @@ export default function CockpitLayout({ children }: { children: React.ReactNode 
           </form>
         </div>
       </header>
-      <main className="container">{children}</main>
+      <main className="container" style={{ paddingTop: 'var(--space-10)', paddingBottom: 'var(--space-20)' }}>
+        {children}
+      </main>
     </>
   );
 }
