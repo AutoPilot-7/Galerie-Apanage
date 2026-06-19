@@ -313,8 +313,32 @@ ${snippet}`;
     };
   }
 
-  async search(): ReturnType<ScraperService['search']> {
-    return nonBranche('ScraperService', 'search');
+  async search({ sources, criteres }: { sources: string[]; criteres: Record<string, unknown> }): ReturnType<ScraperService['search']> {
+    const marque = String(criteres.marque ?? '');
+    const modele = String(criteres.modele ?? '');
+    const query = encodeURIComponent(`${marque} ${modele}`.trim());
+
+    // Construit une URL de recherche par source puis extrait la première annonce trouvée.
+    const buildSearchUrl = (domaine: string): string | null => {
+      if (domaine.includes('catawiki')) return `https://www.catawiki.com/en/l/cars?q=${query}`;
+      if (domaine.includes('collectingcars')) return `https://collectingcars.com/for-sale/?search=${query}`;
+      if (domaine.includes('leboncoin')) return `https://www.leboncoin.fr/recherche?text=${query}&category=2`;
+      if (domaine.includes('autoscout')) return `https://www.autoscout24.fr/lst?q=${query}`;
+      return null;
+    };
+
+    const results: AnnonceExtraite[] = [];
+    for (const domaine of sources) {
+      const url = buildSearchUrl(domaine);
+      if (!url) continue;
+      try {
+        const annonce = await this.extract({ url });
+        results.push(annonce);
+      } catch {
+        // Source inaccessible — on passe à la suivante.
+      }
+    }
+    return results;
   }
 }
 
